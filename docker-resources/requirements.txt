@@ -1,0 +1,4 @@
+boto3==1.12.12
+tensorflow==1.15.2
+bert-serving-server==1.10.0
+bert-serving-client==1.10.0
