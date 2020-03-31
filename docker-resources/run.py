@@ -10,4 +10,7 @@ if __name__ == "__main__":
     text = extractor.extract(bucket=s3BucketName, key=documentName)
 
     # retrieve features from the document
-    # ef = ExtractFeatures(text)
+    ef = ExtractFeatures(text)
+    encoded_doc = ef.encode()
+    print(encoded_doc)
+    ef.end()

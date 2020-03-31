@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
+
 @dataclass
 class Line:
     id: str
@@ -8,6 +9,7 @@ class Line:
     confidence: float
     page: int
     geometry: dict
+    encoding: List[float] = field(default_factory=lambda: [])
 
 
 @dataclass

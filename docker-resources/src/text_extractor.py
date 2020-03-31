@@ -18,7 +18,7 @@ class TextExtractor:
                     "aws_secret_access_key": os.environ.get("aws_secret_access_key"),
                 }
             )
-        self._client = boto3.client("textract",**args)
+        self._client = boto3.client("textract", **args)
 
     def extract(self, bucket=None, key=None):
         if not all([bucket, key]):
