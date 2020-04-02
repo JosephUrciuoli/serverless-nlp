@@ -1,9 +1,11 @@
 import time
+import logging
 from .utils import get_client
 from .types import Line, Document
 
 # https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DJHVHB#__sid=js0
 
+LOG = logging.getLogger("serverless-nlp")
 
 class TextExtractor:
     def __init__(self):
@@ -12,14 +14,14 @@ class TextExtractor:
     def extract(self, bucket=None, key=None):
         if not all([bucket, key]):
             raise ValueError("Bucket and Key required to extract.")
-        print(f"Extracting document {key} from {bucket}.")
+        LOG.info(f"Extracting document {key} from {bucket}.")
 
         job_id = self._start_job(bucket, key)
         if not job_id:
             return
 
         final_status = self._poll_job(job_id)
-        print(f"Final status of job {final_status}.")
+        LOG.info(f"Final status of job {final_status}.")
 
         pages = self._get_results(job_id)
 
@@ -45,14 +47,14 @@ class TextExtractor:
     def _poll_job(self, job_id):
         if not job_id:
             raise ValueError("Job ID required to monitor.")
-        print(f"Monitoring job: {job_id}")
+        LOG.info(f"Monitoring job: {job_id}")
 
         status = "IN_PROGRESS"
         while status == "IN_PROGRESS":
             time.sleep(3)
             response = self._client.get_document_text_detection(JobId=job_id)
             status = response["JobStatus"]
-            print(f"Job status: {status}")
+            LOG.info(f"Job status: {status}")
 
         return status
 
@@ -62,7 +64,7 @@ class TextExtractor:
                 DocumentLocation={"S3Object": {"Bucket": bucket, "Name": key}}
             )
         except Exception as e:
-            print(f"Unable to extract document {key} from {bucket}. Error: {str(e)}")
+            LOG.error(f"Unable to extract document {key} from {bucket}. Error: {str(e)}")
             raise e
 
         return response["JobId"]
@@ -72,7 +74,7 @@ class TextExtractor:
         response = self._client.get_document_text_detection(JobId=job_id)
 
         pages.append(response)
-        print("Resultset page received: 1")
+        LOG.info("Resultset page received: 1")
         next_token = None
         if "NextToken" in response:
             next_token = response["NextToken"]
@@ -83,7 +85,7 @@ class TextExtractor:
             )
 
             pages.append(response)
-            print(f"Resultset page received: {len(pages)}")
+            LOG.info(f"Resultset page received: {len(pages)}")
             next_token = None
             if "NextToken" in response:
                 next_token = response["NextToken"]
