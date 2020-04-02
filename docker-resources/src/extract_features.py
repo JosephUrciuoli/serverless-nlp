@@ -3,7 +3,8 @@ from bert_serving.server import BertServer
 from bert_serving.server.helper import get_args_parser, get_shutdown_parser
 from sklearn.decomposition import PCA
 
-NUM_FEATURES=50
+NUM_FEATURES = 50
+
 
 class ExtractFeatures:
     def __init__(self, document):
@@ -14,7 +15,7 @@ class ExtractFeatures:
             )
         )
 
-        #self._server.start()
+        # self._server.start()
         self._bc = BertClient()
 
     def _reduce_dim(self, encodings):

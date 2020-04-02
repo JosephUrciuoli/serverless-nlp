@@ -8,7 +8,9 @@ documentName = "documents/FL.1943.12.pdf"
 feature_directory = "output/"
 
 if __name__ == "__main__":
-    os.system("bert-serving-start -model_dir bert/uncased_L-12_H-768_A-12/ -port=5555 &")
+    os.system(
+        "bert-serving-start -model_dir bert/uncased_L-12_H-768_A-12/ -port=5555 &"
+    )
 
     # extract necessary data from the document
     extractor = TextExtractor()

@@ -24,30 +24,32 @@ def get_client(type):
 
 
 def doc_to_dataframe(doc):
-    print('Unpacking to dictionary...')
+    print("Unpacking to dictionary...")
     doc_dict = [line.__dict__ for line in doc.lines]
     for line in doc_dict:
-        encoding_dict = {f"feat_{index}": val for index, val in enumerate(line["encoding"])}
+        encoding_dict = {
+            f"feat_{index}": val for index, val in enumerate(line["encoding"])
+        }
         line.update(encoding_dict)
         del line["encoding"]
-    print('Done. Exporting to DataFrame...')
+    print("Done. Exporting to DataFrame...")
     df = pd.DataFrame(doc_dict)
-    print('Dataframe: ', df.head())
+    print("Dataframe: ", df.head())
     return df
 
 
 def write_to_s3(df, bucket, object_name):
     s3_client = get_client("s3")
     csv_buf = StringIO()
-    print('Writing to buffer...')
-    df.to_csv(csv_buf,index=False)
-    print('Done. Putting object...')
+    print("Writing to buffer...")
+    df.to_csv(csv_buf, index=False)
+    print("Done. Putting object...")
     csv_buf.seek(0)
     try:
         response = s3_client.put_object(
             Bucket=bucket, Body=csv_buf.getvalue(), Key=object_name
         )
-        print('Done', response)
+        print("Done", response)
     except ClientError as e:
         print(e)
         return False
