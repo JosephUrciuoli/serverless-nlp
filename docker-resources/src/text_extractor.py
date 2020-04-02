@@ -1,24 +1,13 @@
-import boto3
 import time
-import os
+from .utils import get_client
 from .types import Line, Document
-
 
 # https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DJHVHB#__sid=js0
 
 
 class TextExtractor:
     def __init__(self):
-        args = {"region_name": "us-east-1"}
-        if os.environ.get("env", "dev") == "dev":
-            # only provide credentials in local versions - IAM role used in prod
-            args.update(
-                {
-                    "aws_access_key_id": os.environ.get("aws_access_key_id"),
-                    "aws_secret_access_key": os.environ.get("aws_secret_access_key"),
-                }
-            )
-        self._client = boto3.client("textract", **args)
+        self._client = get_client("textract")
 
     def extract(self, bucket=None, key=None):
         if not all([bucket, key]):
