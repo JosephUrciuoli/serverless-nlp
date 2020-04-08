@@ -9,7 +9,7 @@ documentName = "documents/FL.1943.12.pdf"
 feature_directory = "output/"
 
 # create logger
-LOG = logging.getLogger('serverless-nlp')
+LOG = logging.getLogger("serverless-nlp")
 LOG.setLevel(logging.DEBUG)
 
 # create console handler and set level to debug
@@ -17,7 +17,7 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
 # create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # add formatter to ch
 ch.setFormatter(formatter)

@@ -6,6 +6,7 @@ from botocore.exceptions import ClientError, NoCredentialsError
 
 LOG = logging.getLogger("serverless-nlp")
 
+
 def _get_aws_args():
     args = {"region_name": "us-east-1"}
     if os.environ.get("env", "dev") == "dev":

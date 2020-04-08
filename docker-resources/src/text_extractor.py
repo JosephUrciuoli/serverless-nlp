@@ -7,6 +7,7 @@ from .types import Line, Document
 
 LOG = logging.getLogger("serverless-nlp")
 
+
 class TextExtractor:
     def __init__(self):
         self._client = get_client("textract")
@@ -64,7 +65,9 @@ class TextExtractor:
                 DocumentLocation={"S3Object": {"Bucket": bucket, "Name": key}}
             )
         except Exception as e:
-            LOG.error(f"Unable to extract document {key} from {bucket}. Error: {str(e)}")
+            LOG.error(
+                f"Unable to extract document {key} from {bucket}. Error: {str(e)}"
+            )
             raise e
 
         return response["JobId"]
