@@ -4,8 +4,8 @@ from src.text_extractor import TextExtractor
 from src.feature_extractor import FeatureExtractor
 from src.utils import doc_to_dict, write_to_s3
 
-s3BucketName = "serverless-nlp"
-documentName = "documents/FL.1943.12.pdf"
+bucket_name = os.environ.get("S3_BUCKET")
+document_name = os.environ.get("S3_KEY")
 feature_directory = "output/"
 
 # create logger
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # extract necessary data from the document
     extractor = TextExtractor()
-    text = extractor.extract(bucket=s3BucketName, key=documentName)
+    text = extractor.extract(bucket=bucket_name, key=document_name)
 
     # retrieve features from the document
     ef = FeatureExtractor(text)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     # format the document into a dataframe
     doc = doc_to_dict(text)
-    res = write_to_s3(doc, s3BucketName, "output/FL.1943.12.csv")
+    res = write_to_s3(doc, bucket_name, f'output/{document_name.split("/")[-1]}')
     LOG.debug(
-        f'Attempted to write result to {s3BucketName + "/output/FL.1943.12.csv"}. Result: {"SUCCCESS" if res else "FAIL"}'
+        f'Attempted to write result to {bucket_name + "/output/" + document_name.split("/")[-1]}. Result: {"SUCCCESS" if res else "FAIL"}'
     )

@@ -15,17 +15,17 @@ push:
 	@echo "  $(P) push"
 	eval `aws ecr get-login --profile $(aws_profile) --region $(aws_region) --no-include-email`
 	docker tag $(DOCKER_IMAGE):$(VERSION) $(DOCKER_REPO):$(VERSION)
-	docker push $(DOCKER_DEPLOY_IMAGE):$(VERSION)
+	docker push $(DOCKER_REPO):$(VERSION)
 
 .PHONY: lint
 lint:
 	@echo "  $(P) lint"
-	pylint ./docker-resources
+	pylint ./docker-resources cmd.py
 
 .PHONY: format
 format:
 	@echo "  $(P) format"
-	black ./docker-resources
+	black ./docker-resources cmd.py
 
 
 
