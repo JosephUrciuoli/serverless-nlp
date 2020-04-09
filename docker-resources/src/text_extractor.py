@@ -19,30 +19,14 @@ class TextExtractor:
 
         job_id = self._start_job(bucket, key)
         if not job_id:
-            return
+            return None
 
         final_status = self._poll_job(job_id)
         LOG.info(f"Final status of job {final_status}.")
 
         pages = self._get_results(job_id)
 
-        document = self._structure_doc(pages)
-        return document
-
-    def _structure_doc(self, pages):
-        document = Document()
-        for page in pages:
-            for block in page["Blocks"]:
-                if block["BlockType"] != "LINE":
-                    continue
-                line = Line(
-                    id=block["Id"],
-                    text=block["Text"],
-                    confidence=block["Confidence"],
-                    page=block["Page"],
-                    geometry=block["Geometry"],
-                )
-                document.lines.append(line)
+        document = _structure_doc(pages)
         return document
 
     def _poll_job(self, job_id):
@@ -94,3 +78,20 @@ class TextExtractor:
                 next_token = response["NextToken"]
 
         return pages
+
+
+def _structure_doc(pages):
+    document = Document()
+    for page in pages:
+        for block in page["Blocks"]:
+            if block["BlockType"] != "LINE":
+                continue
+            line = Line(
+                id=block["Id"],
+                text=block["Text"],
+                confidence=block["Confidence"],
+                page=block["Page"],
+                geometry=block["Geometry"],
+            )
+            document.lines.append(line)
+    return document

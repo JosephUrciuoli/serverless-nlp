@@ -1,7 +1,9 @@
 import os
-import boto3
 import logging
 import csv
+
+import boto3
+
 from botocore.exceptions import ClientError, NoCredentialsError
 
 LOG = logging.getLogger("serverless-nlp")
@@ -21,9 +23,9 @@ def _get_aws_args():
     return args
 
 
-def get_client(type):
+def get_client(_type):
     args = _get_aws_args()
-    return boto3.client(type, **args)
+    return boto3.client(_type, **args)
 
 
 def doc_to_dict(doc):
@@ -53,7 +55,7 @@ def _write_to_csv(file, doc_dict):
 def _upload_file(csv_file, bucket, object_name):
     s3_client = get_client("s3")
     try:
-        response = s3_client.upload_file(csv_file, bucket, object_name)
+        s3_client.upload_file(csv_file, bucket, object_name)
         LOG.info("Done")
     except ClientError as e:
         LOG.error("Client Error", e)

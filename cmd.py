@@ -1,8 +1,10 @@
-import fire
+import pprint
 import secrets
 import os
+
+import fire
 import boto3
-import pprint
+
 
 # Documents to extract features from. This could be provide via API or other method in practice
 DOCS = ["FL.1942.1.pdf", "FL.1943.10.pdf", "FL.1943.12.pdf"]
@@ -19,10 +21,10 @@ class Jobs:
 
     def submit_jobs(self):
         for doc in DOCS:
-            hash = secrets.token_hex(4)
-            print(f"Submitting job for {doc} with hash {hash}")
+            _hash = secrets.token_hex(4)
+            print(f"Submitting job for {doc} with hash {_hash}")
             job = self.batch_client.submit_job(
-                jobName=f"serverless-nlp-extraction-{hash}",
+                jobName=f"serverless-nlp-extraction-{_hash}",
                 jobQueue="serverless-nlp-jobqueue",
                 jobDefinition="serverless-nlp-jobdefinition:4",
                 containerOverrides={
