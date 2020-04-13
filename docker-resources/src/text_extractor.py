@@ -1,18 +1,43 @@
+"""
+
+This module is used to extract text from PDF documents. The OCRing of the document
+is done with AWS' managed service, textract. The result of textract is then dumped
+into a Document object for use with other modules in the app.
+
+Example:
+        text_extractor = TextExtractor()
+        text = extractor.extract(bucket=BUCKET_NAME, key=DOCUMENT_NAME) # returns a Document
+
+"""
+
 import time
 import logging
 from .utils import get_client
 from .types import Line, Document
 
-# https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DJHVHB#__sid=js0
-
 LOG = logging.getLogger("serverless-nlp")
 
 
 class TextExtractor:
+    """Uses AWS textract to OCR documents and then store them in Document objects
+
+        Attributes:
+            _client (AWS Textract Client): Connection to the AWS textract service via boto3
+
+    """
+
     def __init__(self):
         self._client = get_client("textract")
 
-    def extract(self, bucket=None, key=None):
+    def extract(self, bucket: str = None, key: str = None):
+        """ main function to run functions that extract the text from a given document
+              Args:
+                bucket: the S3 bucket
+                key: the name (directories + filename) in the S3 bucket of the document
+
+            Returns:
+                Document with extracted text for success, None otherwise
+        """
         if not all([bucket, key]):
             raise ValueError("Bucket and Key required to extract.")
         LOG.info(f"Extracting document {key} from {bucket}.")
@@ -29,7 +54,14 @@ class TextExtractor:
         document = _structure_doc(pages)
         return document
 
-    def _poll_job(self, job_id):
+    def _poll_job(self, job_id: str) -> str:
+        """ polls for the status of the textract job
+              Args:
+                job_id: the job ID of the textract conversion process
+
+            Returns:
+                status: the status of the textract job
+        """
         if not job_id:
             raise ValueError("Job ID required to monitor.")
         LOG.info(f"Monitoring job: {job_id}")
@@ -43,7 +75,15 @@ class TextExtractor:
 
         return status
 
-    def _start_job(self, bucket, key):
+    def _start_job(self, bucket: str, key: str) -> str:
+        """ submits the job to the textract service
+              Args:
+                bucket: the S3 bucket
+                key: the name (directories + filename) in the S3 bucket of the document
+
+            Returns:
+                job_id: the id of the textract job
+        """
         try:
             response = self._client.start_document_text_detection(
                 DocumentLocation={"S3Object": {"Bucket": bucket, "Name": key}}
@@ -56,7 +96,15 @@ class TextExtractor:
 
         return response["JobId"]
 
-    def _get_results(self, job_id):
+    def _get_results(self, job_id: str) -> list:
+        """ retrieves the results of the textract job
+
+              Args:
+                job_id: the job id of the textract job
+
+            Returns:
+                pages: list of pages and associated content from the textract job
+        """
         pages = []
         response = self._client.get_document_text_detection(JobId=job_id)
 
@@ -80,7 +128,15 @@ class TextExtractor:
         return pages
 
 
-def _structure_doc(pages):
+def _structure_doc(pages: list) -> Document:
+    """ takes data from the textract job and places it in a Document object
+
+          Args:
+            pages: list of pages and associated content from the textract job
+
+        Returns:
+            document: Document object with extracted data
+    """
     document = Document()
     for page in pages:
         for block in page["Blocks"]:

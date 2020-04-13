@@ -23,6 +23,7 @@ class Line:
           encoding: the Bert encoding of the text
 
       """
+
     id: str
     text: str
     confidence: float
@@ -39,4 +40,5 @@ class Document:
           line: list of lines in the document. each line contains metadata in the Line object
 
       """
+
     lines: List[Line] = field(default_factory=lambda: [])

@@ -1,3 +1,16 @@
+"""
+
+This module is used to run the extraction job from end to end. This includes
+    1. getting necessary data for the extraction job
+    2. using textract to OCR the document
+    3. Using Bert-as-a-Server to extract features
+    4. Writing the results to CSV
+
+Example:
+        $ python run.py
+
+"""
+
 import os
 import logging
 from src.text_extractor import TextExtractor
@@ -44,5 +57,5 @@ if __name__ == "__main__":
     csv_name = DOCUMENT_NAME.split("/")[-1].replace("pdf", "csv")
     res = write_to_s3(doc, BUCKET_NAME, f"output/{csv_name}")
     LOG.debug(
-        f'Attempted to write result to {BUCKET_NAME + "/output/" + csv_name}. Result: {"SUCCCESS" if res else "FAIL"}'
+        f'Writing to {BUCKET_NAME + "/output/" + csv_name}. Result: {"SUCCCESS" if res else "FAIL"}'
     )
